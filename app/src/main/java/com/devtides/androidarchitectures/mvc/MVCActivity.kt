@@ -9,24 +9,27 @@ import android.widget.*
 import com.devtides.androidarchitectures.R
 
 class MVCActivity : AppCompatActivity() {
+    private lateinit var controller: CountriesController
     private val listValues: MutableList<String> = ArrayList()
-    private var adapter: ArrayAdapter<String>? = null
-    private lateinit var list: ListView
-    private var controller: CountriesController? = null
-    private var retryButton: Button? = null
-    private var progress: ProgressBar? = null
+    private val adapter: ArrayAdapter<String> by lazy {
+        ArrayAdapter(this, R.layout.row_layout, R.id.listText, listValues)
+    }
+    private val list: ListView by lazy {
+        findViewById(R.id.list) as ListView
+    }
+    private val retryButton: Button by lazy {
+        findViewById(R.id.retryButton) as Button
+    }
+    private val progress: ProgressBar by lazy {
+        findViewById(R.id.progress) as ProgressBar
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mvc)
 
         controller = CountriesController(this)
 
-        list = findViewById(R.id.list)
-        retryButton = findViewById(R.id.retryButton)
-        progress = findViewById(R.id.progress)
-        adapter = ArrayAdapter(this, R.layout.row_layout, R.id.listText, listValues)
-
-        list.setAdapter(adapter)
+        list.adapter = adapter
         list.setOnItemClickListener { parent, view, position, id ->
             Toast.makeText(this, "You clicked " + listValues.get(position), Toast.LENGTH_SHORT).show()}
     }
@@ -34,24 +37,24 @@ class MVCActivity : AppCompatActivity() {
     fun setValues(values: List<String>) {
         listValues.clear()
         listValues.addAll(values)
-        retryButton?.visibility = View.GONE
-        progress?.visibility = View.GONE
+        retryButton.visibility = View.GONE
+        progress.visibility = View.GONE
         list.visibility = View.VISIBLE
-        adapter?.notifyDataSetChanged()
+        adapter.notifyDataSetChanged()
     }
 
     fun onRetry(view: View?) {
-        controller?.onRefresh()
+        controller.onRefresh()
         list.visibility = View.GONE
-        retryButton?.visibility = View.GONE
-        progress?.visibility = View.VISIBLE
+        retryButton.visibility = View.GONE
+        progress.visibility = View.VISIBLE
     }
 
     fun onError() {
         Toast.makeText(this, getString(R.string.error_message), Toast.LENGTH_SHORT).show()
-        progress?.visibility = View.GONE
+        progress.visibility = View.GONE
         list.visibility = View.GONE
-        retryButton?.visibility = View.VISIBLE
+        retryButton.visibility = View.VISIBLE
     }
 
     companion object {
